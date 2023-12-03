@@ -50,11 +50,8 @@ struct Game {
 }
 
 impl Game {
-    fn new(id: i32) -> Self {
-        Self {
-            id,
-            draws: Vec::new(),
-        }
+    fn new(id: i32, draws: Vec<Draw>) -> Self {
+        Self { id, draws }
     }
 
     fn match_lt_cond(&self) -> bool {
@@ -78,35 +75,32 @@ impl FromStr for Game {
     type Err = GameParseError;
 
     fn from_str(string: &str) -> Result<Self, Self::Err> {
-        if let Some((game_str, score_str)) = string.split_once(':') {
-            if let Some((_, game_id)) = game_str.split_once(' ') {
-                let game_id: i32 = game_id.parse().unwrap();
-                let mut game = Game::new(game_id);
-                score_str
-                    .split(';')
-                    .map(|draw| {
-                        draw.trim()
-                            .split(',')
-                            .flat_map(|s| s.trim().split_once(' '))
-                            .collect()
-                    })
-                    .for_each(|draw_data: Vec<(&str, &str)>| {
-                        let mut draw = Draw::new();
-                        draw_data.iter().for_each(|(count, color)| match color {
-                            &"red" => draw.red += count.parse::<i32>().unwrap_or(0),
-                            &"green" => draw.green += count.parse::<i32>().unwrap_or(0),
-                            &"blue" => draw.blue += count.parse::<i32>().unwrap_or(0),
-                            _ => {}
-                        });
-                        game.draws.push(draw);
-                    });
-                return Ok(game);
-            } else {
-                Err(GameParseError)
-            }
-        } else {
-            Err(GameParseError)
-        }
+        let (game_str, draws_str) = string.split_once(':').ok_or(GameParseError)?;
+        let game_id: i32 = game_str
+            .split_once(' ')
+            .ok_or(GameParseError)?
+            .1
+            .parse()
+            .or_else(|_| Err(GameParseError))?;
+        let draws: Vec<Draw> = draws_str
+            .split(';')
+            .map(|draw_str| {
+                let mut draw = Draw::new();
+                draw_str.split(',').try_for_each(|draw_str| {
+                    let (score_str, color_str) = draw_str.trim().split_once(' ')?;
+                    let score: i32 = score_str.trim().parse().ok()?;
+                    match color_str {
+                        "red" => draw.red = score,
+                        "green" => draw.green = score,
+                        "blue" => draw.blue = score,
+                        _ => {}
+                    }
+                    Some(())
+                });
+                draw
+            })
+            .collect();
+        Ok(Game::new(game_id, draws))
     }
 }
 
