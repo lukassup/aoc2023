@@ -57,20 +57,18 @@ pub fn day4pt2(filename: &str) -> Result<u64, Box<dyn std::error::Error>> {
         .collect();
 
     // build vector to store count of card copies, we start with one copy for each card
-    let mut card_copies: Vec<(&u64, u64)> = card_scores
-        .iter()
-        .map(|card_score| (card_score, 1))
-        .collect();
+    let mut card_copies: Vec<u64> = vec![1; card_scores.len()];
     // count per-card copies
-    for i in 0..card_copies.len() {
-        let (score, copies_initial) = card_copies[i];
-        if *score > 0 {
-            for j in (i + 1)..(i + 1 + *score as usize) {
-                card_copies[j].1 += copies_initial;
+    for index in 0..card_scores.len() {
+        let score = card_scores[index];
+        let copies_current = card_copies[index];
+        if score > 0 {
+            for index_copy in (index + 1)..(index + 1 + score as usize) {
+                card_copies[index_copy] += copies_current;
             }
         }
     }
-    let result = card_copies.iter().fold(0, |sum, (_, copies)| sum + copies);
+    let result = card_copies.iter().sum();
     Ok(result)
 }
 
