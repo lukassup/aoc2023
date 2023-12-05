@@ -20,6 +20,20 @@ fn parse_seeds(line: &str) -> Vec<i64> {
         .collect()
 }
 
+fn parse_seed_ranges(line: &str) -> Vec<(i64, i64)> {
+    let mut seed_ranges = Vec::new();
+    let mut num_iter = line
+        .split_once(':')
+        .expect("error splitting by ':'")
+        .1
+        .split_ascii_whitespace()
+        .filter_map(|s| s.trim().parse::<i64>().ok());
+    while let (Some(range_start), Some(range_len)) = (num_iter.next(), num_iter.next()) {
+        seed_ranges.push((range_start, range_len));
+    }
+    seed_ranges
+}
+
 /// Each line within a map contains three numbers:
 ///
 /// `{dst_range_start} {src_range_start} {range_length}`
@@ -32,10 +46,10 @@ fn parse_mapping(lines_iter: &mut impl Iterator<Item = String>) -> Vec<(i64, i64
         let mut value_iter = line
             .split_ascii_whitespace()
             .filter_map(|item| item.trim().parse::<i64>().ok());
-        if let (Some(v1), Some(v2), Some(v3)) =
+        if let (Some(dst_range_start), Some(src_range_start), Some(range_len)) =
             (value_iter.next(), value_iter.next(), value_iter.next())
         {
-            mapping.push((v1, v2, v3));
+            mapping.push((dst_range_start, src_range_start, range_len));
         }
     }
     mapping
@@ -55,6 +69,17 @@ fn remap(initial_nums: Vec<i64>, mapping: &Vec<(i64, i64, i64)>) -> Vec<i64> {
                 }
             }
             remapped_num
+        })
+        .collect()
+}
+
+fn remap_range(initial_ranges: Vec<(i64, i64)>, mapping: &Vec<(i64, i64, i64)>) -> Vec<(i64, i64)> {
+    initial_ranges
+        .iter()
+        .map(|&range| {
+            let remapped_range = range;
+            // TODO
+            range
         })
         .collect()
 }
@@ -104,8 +129,38 @@ pub fn day5pt1(filename: &str) -> Result<i64, Box<dyn Error>> {
 
 pub fn day5pt2(filename: &str) -> Result<i64, Box<dyn Error>> {
     let path = Path::new(filename);
-    let lines = read_lines(path)?.flatten();
-    // TODO
+    let mut lines_iter = read_lines(path)?.flatten();
+    let mut ranges: Vec<(i64, i64)> = Vec::new();
+    while let Some(line) = lines_iter.next() {
+        match line {
+            l if l.starts_with("seeds:") => {
+                ranges = parse_seed_ranges(&l);
+            }
+            l if l.starts_with("seed-to-soil map:") => {
+                // TODO
+            }
+            l if l.starts_with("soil-to-fertilizer map:") => {
+                // TODO
+            }
+            l if l.starts_with("fertilizer-to-water map:") => {
+                // TODO
+            }
+            l if l.starts_with("water-to-light map:") => {
+                // TODO
+            }
+            l if l.starts_with("light-to-temperature map:") => {
+                // TODO
+            }
+            l if l.starts_with("temperature-to-humidity map:") => {
+                // TODO
+            }
+            l if l.starts_with("humidity-to-location map:") => {
+                // TODO
+            }
+            _ => {}
+        }
+    }
+    dbg!(&ranges);
     Ok(0)
 }
 
