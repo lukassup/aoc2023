@@ -65,7 +65,7 @@ pub fn day6pt1(filename: &str) -> Result<i64, Box<dyn Error>> {
 pub fn day6pt2(filename: &str) -> Result<i64, Box<dyn Error>> {
     let path = Path::new(filename);
     let mut lines_iter = read_lines(path)?.flatten();
-    let mut res: Vec<i64> = Vec::new();
+    let mut res: i64 = 0;
     if let (Some(line_time), Some(line_distance)) = (lines_iter.next(), lines_iter.next()) {
         let t = line_time
             .split_once(':')
@@ -89,9 +89,9 @@ pub fn day6pt2(filename: &str) -> Result<i64, Box<dyn Error>> {
         let s1 = s1.ceil() as i64;
         let s2 = s2.ceil() as i64;
         // count all integers satisfying equation range: solution1..solution2
-        res.push((s1..s2).count() as i64);
+        res = (s1..s2).count() as i64;
     }
-    Ok(res.iter().product())
+    Ok(res)
 }
 
 #[allow(unused_imports)]
