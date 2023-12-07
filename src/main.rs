@@ -16,6 +16,9 @@ use crate::day5::day5pt2;
 mod day6;
 use crate::day6::day6pt1;
 use crate::day6::day6pt2;
+mod day7;
+use crate::day7::day7pt1;
+use crate::day7::day7pt2;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("ADVENT OF CODE 2023");
@@ -43,5 +46,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("DAY 6 - part 1: {result}");
     let result = day6pt2("input/day6.txt")?;
     println!("DAY 6 - part 2: {result}");
+    let result = day7pt1("input/day7.txt")?;
+    println!("DAY 7 - part 1: {result}");
+    let result = day7pt2("input/day7.txt")?;
+    println!("DAY 7 - part 2: {result}");
     Ok(())
 }
